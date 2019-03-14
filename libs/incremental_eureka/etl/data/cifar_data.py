@@ -63,8 +63,13 @@ class CifarData(Data):
             image.set_shape([3 * image_height * image_width])
 
             # Reshape from [depth * height * width] to [depth, height, width].
+            image = tf.cast(
+                tf.transpose(tf.reshape(image, [3, image_height, image_width]), [1, 2, 0]),
+                tf.float32)
 
-            # image = tf.image.resize_images(image, [self.image_width, self.image_height])
+            image = tf.image.convert_image_dtype(image,
+                                                 dtype=tf.float32,
+                                                 saturate=True) * (1 / 255.0)
 
             label = tf.cast(features['label'], tf.int32)
             # label = tf.one_hot(label, depth=number_of_classes)

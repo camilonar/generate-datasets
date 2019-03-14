@@ -61,9 +61,17 @@ class FashionMnistData(Data):
                     'image_raw': tf.FixedLenFeature([], tf.string)
                 })
 
-            image = tf.decode_raw(features['image_raw'], numpy.uint8)
+            image = tf.decode_raw(features['image_raw'], tf.uint8)
             image.set_shape((image_width * image_height))
             # Reshape from [depth * height * width] to [depth, height, width].
+
+            image = tf.cast(
+                tf.transpose(tf.reshape(image, [1, image_height, image_width]), [1, 2, 0]),
+                tf.float32)
+
+            image = tf.image.convert_image_dtype(image,
+                                                 dtype=tf.float32,
+                                                 saturate=True) * (1 / 255.0)
 
             label = tf.cast(features['label'], tf.int32)
             # label = tf.one_hot(label, depth=number_of_classes)

@@ -2,10 +2,10 @@
 Module for the data pipeline of MNIST dataset.
 """
 import tensorflow as tf
-from  libs.incremental_eureka.etl.reader.tfrecords_reader import TFRecordsReader
+from libs.incremental_eureka.etl.reader.tfrecords_reader import TFRecordsReader
 
-from  libs.incremental_eureka.etl.data import Data
-import  libs.incremental_eureka.utils.constants as const
+from libs.incremental_eureka.etl.data import Data
+import libs.incremental_eureka.utils.constants as const
 
 
 class MnistData(Data):
@@ -69,7 +69,7 @@ class MnistData(Data):
                 tf.transpose(tf.reshape(image, [1, image_height, image_width]), [1, 2, 0]),
                 tf.float32)
 
-            # image = tf.image.resize_images(image, [self.image_width, self.image_height])
+            image = tf.image.resize_images(image, [self.image_width, self.image_height])
 
             image = tf.image.convert_image_dtype(image,
                                                  dtype=tf.float32,
@@ -94,7 +94,7 @@ class MnistData(Data):
             dataset = dataset.repeat(self.curr_config.epochs)
 
         dataset.skip(skip_count)
-        
+
         iterator = dataset.make_initializable_iterator()
         images_batch, target_batch = iterator.get_next()
         return iterator, images_batch, target_batch
