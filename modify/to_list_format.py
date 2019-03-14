@@ -59,6 +59,7 @@ def convert_to_list_mnist(folder):
         for index in range(len(images)):
             num_image = itera + index  # TODO: mirar si no hay problema que el numero de la imagen no sea seguido
             output = '{}/{}_{}.png'.format(folder, labels[index], num_image)
+            print(num_image)
             scipy.misc.imsave(output, np.squeeze(images[index]))
 
     conver_to_list(pipeline, _process_examples, folder)
@@ -74,8 +75,7 @@ def convert_to_list_cifar(folder):
         for index in range(len(images)):
             num_image = itera + index  # TODO: mirar si no hay problema que el numero de la imagen no sea seguido
             output = '{}/{}_{}.png'.format(folder, labels[index], num_image)
-
-            print(images[index].shape)
+            #print(images[index].shape)
             scipy.misc.imsave(output, images[index])
     conver_to_list(pipeline, _process_examples, folder)
 
@@ -89,22 +89,22 @@ def convert_to_list_fashion(folder):
         for index in range(len(images)):
             num_image = itera + index  # TODO: mirar si no hay problema que el numero de la imagen no sea seguido
             output = '{}/{}_{}.png'.format(folder, labels[index], num_image)
-            print(images[index].shape)
+            #print(images[index].shape)
             scipy.misc.imsave(output, np.squeeze(images[index]))
 
     conver_to_list(pipeline, _process_examples, folder)
 
 def conver_to_list(pipeline, _process_examples, output_folder):
     sess = tf.InteractiveSession()
+    itera = 0
     for i in range(len(pipeline.general_config.train_configurations)):
         pipeline.change_dataset_part(i)
         training_iterator, data_x, data_y = pipeline.build_train_data_tensor()
         sess.run(training_iterator.initializer)
-        itera = 0
         while True:
             try:
                 image_batch, target_batch = sess.run([data_x, data_y])
-                _process_examples(image_batch, target_batch, itera,output_folder)
+                _process_examples(image_batch, target_batch, itera*pipeline.curr_config.batch_size ,output_folder)
                 # Process samples
                 itera += 1
             except OutOfRangeError:
@@ -112,4 +112,6 @@ def conver_to_list(pipeline, _process_examples, output_folder):
 
 
 if __name__ == '__main__':
-    convert_to_list_fashion("dataset")
+    convert_to_list_fashion("datasetFashion/dataset")
+    convert_to_list_cifar("datasetCifar/dataset")
+    convert_to_list_mnist("datasetMnist/dataset")
